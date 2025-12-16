@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Asaas Pagamento</name>
+	<code>Asaas Pagamento</code>
+	<version>1.0.0.0</version>
+	<author>Opencart Master</author>
+	<link>https://www.opencartmaster.com.br</link>
+
+	<file path="catalog/controller/checkout/success.php">
+		<operation error="skip">
+        <search trim="true"><![CDATA[if (isset($this->session->data['order_id'])) {]]></search>
+		<add position="before"><![CDATA[
+    if (isset($this->session->data['order_id'])) {
+		$ord = $this->session->data['order_id'];
+		
+		$this->load->model('checkout/order');
+		$order_info = $this->model_checkout_order->getOrder($ord);
+        		
+		if ($order_info && $order_info['payment_code'] == 'asaas_pix') {
+    if ($this->config->get('asaas_pix_mode')) {
+			$mode = false;
+		} else {
+			$mode = true;
+		}
+		  $data['infopix'] = true;
+          $payid = $this->getLink($ord);
+          $res_api = $this->getPay($payid, $mode);
+          $data['qrcode'] = 'data:image/png;base64, ' . $res_api['pix']['encodedImage'];
+          $data['copia'] = $res_api['pix']['payload'];
+		      $data['exp'] = $res_api['pix']['expirationDate'];
+          $data['bt'] = $this->url->link('account/order/info', 'order_id=' . $ord, true);
+		} else {
+		  $data['infopix'] = false;  
+		}
+
+    if ($order_info && $order_info['payment_code'] == 'asaas_boleto') {
+    if ($this->config->get('asaas_boleto_mode')) {
+			$mode = false;
+		} else {
+			$mode = true;
+		}
+		  $data['infobol'] = true;
+          $payid = $this->getLink2($ord);
+          $res_api = $this->getPay($payid, $mode);
+          $data['barcode'] = $res_api['bankSlip']['barCode'];
+          $data['linkboleto'] = $res_api['bankSlip']['bankSlipUrl'];
+          $data['bt'] = $this->url->link('account/order/info', 'order_id=' . $ord, true);
+		} else {
+		  $data['infobol'] = false;  
+		}
+        } else {
+          $data['infopix'] = false;
+          $data['infobol'] = false; 
+        }
+        ]]></add>
+		</operation>
+        <operation error="skip">
+        <search trim="true"><![CDATA[public function index() {]]></search>
+		<add position="before"><![CDATA[
+        public function getLink($order_id) {
+            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "asaas_callback WHERE order_id = '" . (int)$order_id . "'");
+	          if ($query->num_rows) {
+              return $query->row['pay_id'];
+            } else {
+              return false;
+            }
+        }
+
+        public function getLink2($order_id) {
+            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "asaas_callback WHERE order_id = '" . (int)$order_id . "'");
+	          if ($query->num_rows) {
+              return $query->row['pay_id'];
+            } else {
+              return false;
+            }
+        }
+
+        public function getPay($id, $sandbox = true) {
+            $url =  $sandbox ? 'https://sandbox.asaas.com/api/v3/' : 'https://www.asaas.com/api/v3/';
+            $token = $this->config->get('asaas_pix_api_key');
+            $user_agent = base64_decode('TWFzdGVyLzEuMC4wLjAgKFBsYXRhZm9ybWEgb3BlbmNhcnQuY29tIC0gREVWIE9wZW5jYXIgTWFzdGVyKQ==');
+    	      $headers = array('Accept: application/json', 'Content-Type: application/json;charset=UTF-8', 'User-Agent: ' . $user_agent , 'access_token: ' . $token);
+            $soap_do = curl_init();
+            curl_setopt($soap_do, CURLOPT_URL, $url . 'payments/'. $id . '/billingInfo');
+            curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 10);
+            curl_setopt($soap_do, CURLOPT_TIMEOUT,        10);
+            curl_setopt($soap_do, CURLOPT_CUSTOMREQUEST, "GET");
+            curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt($soap_do, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($soap_do, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($soap_do, CURLOPT_HTTPHEADER,     $headers);
+            
+            $response = curl_exec($soap_do); 
+            curl_close($soap_do);
+            $resposta = json_decode($response, true);
+            return  $resposta;
+        }
+        ]]></add>
+		</operation>
+	</file>
+
+    <file path="catalog/view/theme/*/template/common/success.tpl">
+        <operation error="skip">
+        <search trim="true"><![CDATA[<?php echo $text_message; ?>]]></search>
+		<add position="before"><![CDATA[
+      <?php if ($infopix) { ?>
+      <div class="alert alert-info alert-dismissible">
+      <button type="button" class="close pull-right" data-dismiss="alert">×</button>
+      <i class="fa fa-exclamation-circle"></i> <b>Aviso:</b> Após realizar o pagamento clicar no botão Ver Pedido para consultar o status!</div>
+      <img src="<?php echo $qrcode; ?>" width="200px" height="200px" alt="Pix QRCode" /><br>
+      <div class="panel-body">
+      <label class="col-sm-2 control-label" for="copia"><b>PIX Copia e Cola:</b></label>
+      <div class="input-group">
+        <input type="text" class="form-control" value="<?php echo $copia; ?>" name="copia" id="copia" class="form-control" />
+        <span class="input-group-btn">
+        <input type="button" value="Copiar PIX" id="button-copiar" data-loading-text="Copiando"  class="btn btn-primary" />
+        </span></div>
+      </div>
+       <br>
+	     <b>Expiração:</b> <?php echo $exp; ?> <br>
+       <br>
+        <br>
+      <a href="<?php echo $bt; ?>" class="btn btn-success">Ver Pedido</a>
+      <hr>
+
+
+<script type="text/javascript"><!--
+$(document).ready(function() {
+$('#button-copiar').on('click', function() {
+    $("#copia").select();
+    try {
+      var sucesso = document.execCommand('copy');
+      if (sucesso) {
+        alert("Pix copiado para a área de transferência!");
+      } else {
+        alert("Não foi possível copiar o Pix.");
+      }
+    } catch (err) {
+      console.error("Falha ao copiar o Pix: ", err);
+      alert("Não foi possível copiar o Pix.");
+    }
+  });
+});
+//--></script>
+       
+      <?php } ?>
+
+      <?php if ($infobol) { ?>
+      <div class="alert alert-info alert-dismissible">
+      <button type="button" class="close pull-right" data-dismiss="alert">×</button>
+      <i class="fa fa-exclamation-circle"></i> <b>Aviso:</b> Após realizar o pagamento clicar no botão Ver Pedido para consultar o status!</div>
+       <div class="panel-body">
+      <label class="col-sm-2 control-label" for="copia1"><b>Código de Barras:</b></label>
+      <div class="input-group">
+        <input type="text" class="form-control" value="<?php echo $barcode; ?>" name="copia1" id="copia1" class="form-control" />
+        <span class="input-group-btn">
+        <input type="button" value="Copiar Código de Barras" id="button-copiar1" data-loading-text="Copiando"  class="btn btn-primary" />
+        </span></div>
+      </div>
+
+      <br>
+      <a href="<?php echo $linkboleto; ?>" target="_blank" class="btn btn-success">Ver Boleto</a> <br>
+
+      <br><br>
+      <a href="<?php echo $bt; ?>" class="btn btn-info">Ver Pedido</a>
+
+      <hr>
+<script type="text/javascript"><!--
+$(document).ready(function() {
+$('#button-copiar1').on('click', function() {
+    $("#copia1").select();
+    try {
+      var sucesso = document.execCommand('copy');
+      if (sucesso) {
+        alert("Código de Barras copiado para a área de transferência!");
+      } else {
+        alert("Não foi possível copiar o Código de Barras.");
+      }
+    } catch (err) {
+      console.error("Falha ao copiar o Código de Barras: ", err);
+      alert("Não foi possível copiar o Código de Barras.");
+    }
+  });
+});
+//--></script>
+
+      <?php } ?>     
+        ]]></add>
+		</operation>
+	</file>
+
+    <file path="catalog/controller/account/order.php">
+        <operation error="skip">
+        <search trim="true"><![CDATA['comment'    => $result['notify'] ? nl2br($result['comment']) : '']]></search>
+		<add position="replace"><![CDATA['comment'    => nl2br($result['comment'])]]></add>
+		</operation>
+	</file>
+
+</modification>
