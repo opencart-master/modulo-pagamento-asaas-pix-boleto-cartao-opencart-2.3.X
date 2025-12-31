@@ -248,7 +248,7 @@ class ControllerExtensionPaymentAsaasPix extends Controller {
 		$this->checkSandbox($mode);
 
 		if(isset($resposta['errors'])) {
-		$this->error['warning'] = $resposta['errors']['code'];	
+		$this->error['warning'] = $resposta['errors'][0]['description'];	
 		} else {
 		$this->session->data['success'] = "Webhook criado com sucesso!";
 		}
