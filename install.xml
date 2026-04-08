@@ -2,7 +2,7 @@
 <modification>
     <name>Asaas Pagamento</name>
 	<code>Asaas Pagamento</code>
-	<version>1.0.0.1</version>
+	<version>1.0.2.0</version>
 	<author>Opencart Master</author>
 	<link>https://www.opencartmaster.com.br</link>
 
@@ -212,7 +212,7 @@ $('#button-copiar1').on('click', function() {
         <search trim="true"><![CDATA[public function index() {]]></search>
 		<add position="before"><![CDATA[
     public function version() {
-	    $version = '1.0.0.1';
+	    $version = '1.0.2.0';
 	    $url = base64_decode('aHR0cHM6Ly9vcGVuY2FydG1hc3Rlci5jb20uYnIvbW9kdWxlL3ZlcnNpb24v');
         $soap_do = curl_init();
         curl_setopt($soap_do, CURLOPT_URL, $url);

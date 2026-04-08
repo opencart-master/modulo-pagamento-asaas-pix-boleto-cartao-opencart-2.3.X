@@ -249,6 +249,7 @@ class ControllerExtensionPaymentAsaasCartao extends Controller {
 	}
 
 	public function install() {
+		require_once(DIR_SYSTEM . 'library/asaas/asaas_api.php');
         $asaas = new AsaasApi('', true);
 	    $check = $asaas->check();
     }
