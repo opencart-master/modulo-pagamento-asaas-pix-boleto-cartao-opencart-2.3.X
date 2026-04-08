@@ -218,7 +218,7 @@ class ControllerExtensionPaymentAsaasCartao extends Controller {
 		    $comment .= "Pagamento ID: " . $payment['id'] . "\n";
 		    $comment .= "Cartão: " . $payment['creditCard']['creditCardBrand'] . "\n";
 			$comment .= "Parcelas: " . $vezes[0] . "X \n";
-		    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('asaas_cartao_order_status_id'), $comment);
+		    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('asaas_cartao_order_status_id'), $comment, true);
 		    $json['redirect'] = $this->url->link('checkout/success');
 			} 
 
