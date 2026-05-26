@@ -55,11 +55,8 @@
                         <input type="text" class="form-control" id="card_name" name="card_name" placeholder="Como aparece no cartão" required>
                     </div>
                     <div class="form-group">
-                        <label for="card_number">Número do Cartão</label>
-                         <div class="input-group">
+                        <label for="card_number">Número do Cartão <img id="card_flag" class="card-flag" src="" alt="Bandeira"></label>
                          <input type="text" class="form-control" id="card_number" name="card_number" maxlength="19" placeholder="0000 0000 0000 0000" required>
-                         <span class="input-group-addon"><img id="card_flag" class="card-flag" src="" alt="Bandeira"></span>
-                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-4 form-group">
