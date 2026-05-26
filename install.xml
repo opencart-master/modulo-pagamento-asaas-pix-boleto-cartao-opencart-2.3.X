@@ -2,7 +2,7 @@
 <modification>
     <name>Asaas Pagamento</name>
 	<code>Asaas Pagamento</code>
-	<version>1.0.2.0</version>
+	<version>1.0.4.0</version>
 	<author>Opencart Master</author>
 	<link>https://www.opencartmaster.com.br</link>
 
@@ -10,6 +10,8 @@
 		<operation error="skip">
         <search trim="true"><![CDATA[if (isset($this->session->data['order_id'])) {]]></search>
 		<add position="before"><![CDATA[
+    $data['infopix'] = false;
+    $data['infobol'] = false; 
     if (isset($this->session->data['order_id'])) {
 		$ord = $this->session->data['order_id'];
 		
@@ -22,15 +24,13 @@
 		} else {
 			$mode = true;
 		}
-		  $data['infopix'] = true;
           $payid = $this->getLink($ord);
           $res_api = $this->getPay($payid, $mode);
           $data['qrcode'] = 'data:image/png;base64, ' . $res_api['pix']['encodedImage'];
           $data['copia'] = $res_api['pix']['payload'];
 		      $data['exp'] = $res_api['pix']['expirationDate'];
           $data['bt'] = $this->url->link('account/order/info', 'order_id=' . $ord, true);
-		} else {
-		  $data['infopix'] = false;  
+          $data['infopix'] = true;
 		}
 
     if ($order_info && $order_info['payment_code'] == 'asaas_boleto') {
@@ -39,18 +39,13 @@
 		} else {
 			$mode = true;
 		}
-		  $data['infobol'] = true;
           $payid = $this->getLink2($ord);
           $res_api = $this->getPay($payid, $mode);
           $data['barcode'] = $res_api['bankSlip']['barCode'];
           $data['linkboleto'] = $res_api['bankSlip']['bankSlipUrl'];
           $data['bt'] = $this->url->link('account/order/info', 'order_id=' . $ord, true);
-		} else {
-		  $data['infobol'] = false;  
+          $data['infobol'] = true;
 		}
-        } else {
-          $data['infopix'] = false;
-          $data['infobol'] = false; 
         }
         ]]></add>
 		</operation>
@@ -212,7 +207,7 @@ $('#button-copiar1').on('click', function() {
         <search trim="true"><![CDATA[public function index() {]]></search>
 		<add position="before"><![CDATA[
     public function version() {
-	    $version = '1.0.2.0';
+	    $version = '1.0.4.0';
 	    $url = base64_decode('aHR0cHM6Ly9vcGVuY2FydG1hc3Rlci5jb20uYnIvbW9kdWxlL3ZlcnNpb24v');
         $soap_do = curl_init();
         curl_setopt($soap_do, CURLOPT_URL, $url);
