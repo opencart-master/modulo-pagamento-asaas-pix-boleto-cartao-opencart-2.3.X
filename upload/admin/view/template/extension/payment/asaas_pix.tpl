@@ -26,20 +26,6 @@
       </div>
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-asaas-pix" class="form-horizontal">
-         <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_mode; ?></label>
-            <div class="col-sm-10">
-              <select name="asaas_pix_mode" id="input-status" class="form-control">
-                <?php if ($asaas_pix_mode) { ?>
-                <option value="1" selected="selected"><?php echo $text_prod; ?></option>
-                <option value="0"><?php echo $text_sand; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_prod; ?></option>
-                <option value="0" selected="selected"><?php echo $text_sand; ?></option>
-                <?php } ?>
-              </select>
-            </div>
-          </div>
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-key"><?php echo $entry_key; ?></label>
             <div class="col-sm-10">
@@ -84,6 +70,12 @@
 			        </select>
 			      </div>
 		      </div>
+	        <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-venc"><?php echo $entry_venc; ?></label>
+            <div class="col-sm-10">
+              <input type="text" name="asaas_pix_venc" value="<?php echo $asaas_pix_venc; ?>" placeholder="<?php echo $entry_venc; ?>" id="input-venc" class="form-control" />
+            </div>
+          </div>
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-order-status"><?php echo $entry_order_status; ?></label>
             <div class="col-sm-10">

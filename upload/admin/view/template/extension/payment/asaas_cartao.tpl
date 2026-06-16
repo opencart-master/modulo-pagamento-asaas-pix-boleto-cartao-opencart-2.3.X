@@ -25,20 +25,6 @@
       </div>
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-asaas-cartao" class="form-horizontal">
-         <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-mode"><?php echo $entry_mode; ?></label>
-            <div class="col-sm-10">
-              <select name="asaas_cartao_mode" id="input-status" class="form-control">
-                <?php if ($asaas_cartao_mode) { ?>
-                <option value="1" selected="selected"><?php echo $text_prod; ?></option>
-                <option value="0"><?php echo $text_sand; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_prod; ?></option>
-                <option value="0" selected="selected"><?php echo $text_sand; ?></option>
-                <?php } ?>
-              </select>
-            </div>
-          </div>
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-key"><?php echo $entry_key; ?></label>
             <div class="col-sm-10">
@@ -118,6 +104,12 @@
             <label class="col-sm-2 control-label" for="input-juros"><?php echo $entry_juros; ?></label>
             <div class="col-sm-10">
               <input type="text" name="asaas_cartao_juros" value="<?php echo $asaas_cartao_juros; ?>" placeholder="<?php echo $entry_juros; ?>" id="input-juros" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-venc"><?php echo $entry_venc; ?></label>
+            <div class="col-sm-10">
+              <input type="text" name="asaas_cartao_venc" value="<?php echo $asaas_cartao_venc; ?>" placeholder="<?php echo $entry_venc; ?>" id="input-venc" class="form-control" />
             </div>
           </div>
           <div class="form-group">

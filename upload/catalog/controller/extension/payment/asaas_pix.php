@@ -19,13 +19,7 @@ class ControllerExtensionPaymentAsaasPix extends Controller {
 			$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
 			$custom = $order_info['custom_field'];
 
-			if ($this->config->get('asaas_pix_mode')) {
-			$mode = false;
-		    } else {
-			$mode = true;
-		    }
-
-			$asaas = new AsaasApi($this->config->get('asaas_pix_api_key'), $mode);
+			$asaas = new AsaasApi($this->config->get('asaas_pix_api_key'));
 
 			$getcustomer = $asaas->getCustomer($order_info['email']);
 
@@ -57,7 +51,7 @@ class ControllerExtensionPaymentAsaasPix extends Controller {
 			"customer" => $cid,
 			"billingType" => "PIX",
 			"value" => $order_info['total'],
-			"dueDate" => date('Y-m-d', strtotime('+1 days')),
+			"dueDate" => date('Y-m-d', strtotime('+' . $this->config->get('asaas_pix_venc') .' days')),
 			"description" => "Pedido " . $order_info['order_id'],
 			"externalReference"	=> $order_info['order_id'],
 			//"callback" => array("successUrl" => HTTPS_SERVER . "index.php?route=checkout/success")
@@ -68,7 +62,7 @@ class ControllerExtensionPaymentAsaasPix extends Controller {
 			if (isset($payment['id'])) {
 			$this->cadId($payment['id'], $order_info['order_id']);
 		    $comment .= "Pagamento ID: " . $payment['id'] . "\n";
-		     $comment .= "Link do QRCODE: <a href='" . $payment['invoiceUrl'] . "' class='label label-info' target='_blank'> VER 2ª via Pix </a> \n";
+		    $comment .= "Link do QRCODE: <a href='" . $payment['invoiceUrl'] . "' class='label label-info' target='_blank'> VER 2ª via Pix </a> \n";
 		    $this->model_checkout_order->addOrderHistory($this->session->data['order_id'], $this->config->get('asaas_pix_order_status_id'), $comment, true);
 		    $json['redirect'] = $this->url->link('checkout/success');
 			} else {

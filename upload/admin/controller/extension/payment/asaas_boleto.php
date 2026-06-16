@@ -17,9 +17,8 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
-			if($this->config->get('asaas_boleto_mode')){$mode=false;}else{$mode=true;}
-			$asaas = new AsaasApi($this->config->get('asaas_boleto_api_key'), $mode);
-			$sandbox = $asaas->checkSandbox('');
+			$asaas = new AsaasApi($this->config->get('asaas_boleto_api_key'));
+			$sandbox = $asaas->checkSandbox($this->config->get('asaas_boleto_api_key'));
 
 			$this->response->redirect($this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', true));
 		}
@@ -39,6 +38,7 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 		$data['entry_mode'] = $this->language->get('entry_mode');
 		$data['entry_doc'] = $this->language->get('entry_doc');
 		$data['entry_doc1'] = $this->language->get('entry_doc1');
+		$data['entry_venc'] = $this->language->get('entry_venc');
 		$data['entry_total'] = $this->language->get('entry_total');
 		$data['entry_order_status'] = $this->language->get('entry_order_status');
 		$data['entry_order_status2'] = $this->language->get('entry_order_status2');
@@ -135,12 +135,6 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 			$data['asaas_boleto_order_status_id5'] = $this->config->get('asaas_boleto_order_status_id5');
 		}
 
-		if (isset($this->request->post['asaas_boleto_mode'])) {
-			$data['asaas_boleto_mode'] = $this->request->post['asaas_boleto_mode'];
-		} else {
-			$data['asaas_boleto_mode'] = $this->config->get('asaas_boleto_mode');
-		}
-
 		$this->load->model('localisation/order_status');
 
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
@@ -156,7 +150,7 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 		} elseif(!empty($this->config->get('asaas_wb'))) {
 			$data['asaas_wb'] = $this->config->get('asaas_wb');
 		} else {
-			$data['asaas_wb'] = uniqid();
+			$data['asaas_wb'] = md5(uniqid());
 		}
 
 		if (isset($this->request->post['asaas_boleto_sort_order'])) {
@@ -176,6 +170,14 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 		} else {
 			$data['asaas_boleto_doc1'] = $this->config->get('asaas_boleto_doc1');
 		}
+
+		if (isset($this->request->post['asaas_boleto_venc'])) {
+			$data['asaas_boleto_venc'] = $this->request->post['asaas_boleto_venc'];
+		} elseif (!empty($this->config->get('asaas_boleto_venc'))) {
+		    $data['asaas_boleto_venc'] = $this->config->get('asaas_boleto_venc');
+		} else {
+			$data['asaas_boleto_venc'] = 1;
+		}	
 
 		$this->load->model('customer/custom_field');
 		
@@ -206,7 +208,7 @@ class ControllerExtensionPaymentAsaasBoleto extends Controller {
 
 	public function install() {
 		require_once(DIR_SYSTEM . 'library/asaas/asaas_api.php');
-        $asaas = new AsaasApi('', true);
+        $asaas = new AsaasApi($this->config->get('asaas_boleto_api_key'));
 	    $check = $asaas->check();
     }
 
