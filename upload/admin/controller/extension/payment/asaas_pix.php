@@ -255,7 +255,7 @@ class ControllerExtensionPaymentAsaasPix extends Controller {
 		"email" => $this->config->get('config_email')
 		));
 
-		$resposta = $asaas->createWebhooks($webhook);
+		$resposta = json_decode($asaas->createWebhooks($webhook), true);
 
 		if(isset($resposta['errors'])) {
 		$this->error['warning'] = $resposta['errors'][0]['description'];	
