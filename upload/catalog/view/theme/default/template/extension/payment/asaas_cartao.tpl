@@ -34,11 +34,7 @@
     </style>
 
 <div class="col-sm-12">
-        <?php if (!$modo) { ?>
-        <div class="alert alert-info alert-dismissible"><i class="fa fa-exclamation-circle"></i> Atenção: você está em ambiente sandbox!</div>
-        <?php } else { ?>
 		<div class="alert alert-info alert-dismissible"><i class="fa fa-exclamation-circle"></i> Atenção: os dados do cartão precisam ser os mesmo do titular da conta!</div>
-        <?php } ?>
 		<div id="apireturn"></div>     
     </div>
 
