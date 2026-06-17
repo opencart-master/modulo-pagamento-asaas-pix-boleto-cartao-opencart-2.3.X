@@ -72,6 +72,16 @@
 		</operation>
 	</file>
 
+  <file path="catalog/controller/account/success.php">
+		<operation error="skip">
+        <search trim="true"><![CDATA[$data['header'] = $this->load->controller('common/header');]]></search>
+        <add position="after"><![CDATA[
+        $data['infopix'] = false;
+        $data['infobol'] = false; 
+        ]]></add>
+		</operation>
+	</file>
+
     <file path="catalog/view/theme/*/template/common/success.tpl">
         <operation error="skip">
         <search trim="true"><![CDATA[<?php echo $text_message; ?>]]></search>
