@@ -65,7 +65,7 @@
           require_once(DIR_SYSTEM . 'library/asaas/asaas_api.php');
           $asaas = new AsaasApi($this->config->get('asaas_pix_api_key'));
 
-          $resposta = json_decode($asaas->getPaymentInfo($id), true);
+          $resposta = $asaas->getPaymentInfo($id);
           return  $resposta;
         }
         ]]></add>
